@@ -1,0 +1,56 @@
+{
+  "desire_0_20241201_120000": {
+    "name": "房屋月租",
+    "frequency": "每月",
+    "cost": 3000.0,
+    "enabled": true
+  },
+  "desire_1_20241201_120001": {
+    "name": "每周回家支出",
+    "frequency": "每周",
+    "cost": 200.0,
+    "enabled": true
+  },
+  "desire_2_20241201_120002": {
+    "name": "每年送礼支出",
+    "frequency": "每年",
+    "cost": 5000.0,
+    "enabled": true
+  },
+  "desire_3_20241201_120003": {
+    "name": "每月找对象支出",
+    "frequency": "每月",
+    "cost": 500.0,
+    "enabled": true
+  },
+  "desire_4_20241201_120004": {
+    "name": "每月打理形象支出",
+    "frequency": "每月",
+    "cost": 300.0,
+    "enabled": true
+  },
+  "desire_5_20241201_120005": {
+    "name": "每周看电影",
+    "frequency": "每周",
+    "cost": 80.0,
+    "enabled": true
+  },
+  "desire_6_20241201_120006": {
+    "name": "每月旅游",
+    "frequency": "每月",
+    "cost": 1000.0,
+    "enabled": true
+  },
+  "desire_7_20241201_120007": {
+    "name": "每天吃饭",
+    "frequency": "每天",
+    "cost": 50.0,
+    "enabled": true
+  },
+  "desire_8_20241201_120008": {
+    "name": "每季度买衣服",
+    "frequency": "每季度",
+    "cost": 800.0,
+    "enabled": true
+  }
+} 

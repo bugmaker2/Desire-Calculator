@@ -1,0 +1,26 @@
+{
+  "desire_9_20250716_151007": {
+    "name": "每周回家车票",
+    "frequency": "每周",
+    "cost": 300.0,
+    "enabled": true
+  },
+  "desire_1_20250716_151036": {
+    "name": "房租月租",
+    "frequency": "每月",
+    "cost": 4500.0,
+    "enabled": true
+  },
+  "desire_2_20250716_151101": {
+    "name": "每个月需求",
+    "frequency": "每月",
+    "cost": 2000.0,
+    "enabled": true
+  },
+  "desire_3_20250716_151235": {
+    "name": "吃饭",
+    "frequency": "每天",
+    "cost": 60.0,
+    "enabled": true
+  }
+}
