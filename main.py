@@ -12,16 +12,18 @@ from typing import Dict, Any
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QLineEdit, QComboBox, QPushButton, QCheckBox,
-    QListWidget, QListWidgetItem, QMessageBox, QFileDialog,
-    QFrame, QGroupBox, QGridLayout, QSplitter, QScrollArea
+    QListWidget, QListWidgetItem, QMessageBox, QFileDialog, QInputDialog,
+    QFrame, QGroupBox, QGridLayout, QSplitter, QScrollArea,
+    QProgressBar, QTabWidget, QTextEdit, QSpinBox, QDoubleSpinBox
 )
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QTimer
 from PyQt5.QtGui import QFont, QPalette, QColor
 
 class DesireCalculator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.desires = {}
+        self.budget_goal = 0
         self.init_ui()
         self.load_desires()
         
@@ -87,6 +89,31 @@ class DesireCalculator(QMainWindow):
             }
             QPushButton#clearBtn:hover {
                 background-color: #c0392b;
+            }
+            QPushButton#budgetBtn {
+                background-color: #9b59b6;
+            }
+            QPushButton#budgetBtn:hover {
+                background-color: #8e44ad;
+            }
+            QProgressBar {
+                border: 2px solid #bdc3c7;
+                border-radius: 5px;
+                text-align: center;
+            }
+            QProgressBar::chunk {
+                background-color: #3498db;
+                border-radius: 3px;
+            }
+            QProgressBar#budgetProgress::chunk {
+                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+                    stop: 0 #27ae60, stop: 0.5 #f39c12, stop: 1 #e74c3c);
+            }
+            QPushButton#exportBtn {
+                background-color: #1abc9c;
+            }
+            QPushButton#exportBtn:hover {
+                background-color: #16a085;
             }
             QLineEdit, QComboBox {
                 padding: 6px;
@@ -170,6 +197,21 @@ class DesireCalculator(QMainWindow):
         self.cost_edit.setPlaceholderText("例如：3000")
         add_layout.addWidget(self.cost_edit, 2, 1)
         
+        # 优先级
+        add_layout.addWidget(QLabel("优先级:"), 3, 0)
+        self.priority_combo = QComboBox()
+        self.priority_combo.addItems(["低", "中", "高", "必需"])
+        add_layout.addWidget(self.priority_combo, 3, 1)
+        
+        # 类别
+        add_layout.addWidget(QLabel("类别:"), 4, 0)
+        self.category_combo = QComboBox()
+        self.category_combo.addItems([
+            "住房", "交通", "餐饮", "娱乐", "购物", "健康", 
+            "教育", "投资", "其他"
+        ])
+        add_layout.addWidget(self.category_combo, 4, 1)
+        
         layout.addWidget(add_group)
         
         # 添加按钮
@@ -209,7 +251,40 @@ class DesireCalculator(QMainWindow):
         self.yearly_label.setStyleSheet("color: #e74c3c;")
         stats_layout.addWidget(self.yearly_label)
         
+        # 预算进度
+        self.budget_label = QLabel("预算目标: ¥0.00")
+        self.budget_label.setFont(QFont("Arial", 10))
+        stats_layout.addWidget(self.budget_label)
+        
+        self.budget_progress = QProgressBar()
+        self.budget_progress.setObjectName("budgetProgress")
+        self.budget_progress.setVisible(False)
+        stats_layout.addWidget(self.budget_progress)
+        
         layout.addWidget(stats_group)
+        
+        # 筛选和排序
+        filter_group = QGroupBox("筛选和排序")
+        filter_layout = QGridLayout(filter_group)
+        
+        filter_layout.addWidget(QLabel("类别:"), 0, 0)
+        self.category_filter = QComboBox()
+        self.category_filter.addItem("全部")
+        self.category_filter.addItems([
+            "住房", "交通", "餐饮", "娱乐", "购物", "健康", 
+            "教育", "投资", "其他"
+        ])
+        self.category_filter.currentTextChanged.connect(self.filter_desires)
+        filter_layout.addWidget(self.category_filter, 0, 1)
+        
+        filter_layout.addWidget(QLabel("优先级:"), 0, 2)
+        self.priority_filter = QComboBox()
+        self.priority_filter.addItem("全部")
+        self.priority_filter.addItems(["低", "中", "高", "必需"])
+        self.priority_filter.currentTextChanged.connect(self.filter_desires)
+        filter_layout.addWidget(self.priority_filter, 0, 3)
+        
+        layout.addWidget(filter_group)
         
         # 操作按钮
         button_layout = QHBoxLayout()
@@ -224,6 +299,16 @@ class DesireCalculator(QMainWindow):
         load_btn.clicked.connect(self.load_desires)
         button_layout.addWidget(load_btn)
         
+        budget_btn = QPushButton("设置预算")
+        budget_btn.setObjectName("budgetBtn")
+        budget_btn.clicked.connect(self.set_budget_goal)
+        button_layout.addWidget(budget_btn)
+        
+        export_btn = QPushButton("导出报告")
+        export_btn.setObjectName("exportBtn")
+        export_btn.clicked.connect(self.export_report)
+        button_layout.addWidget(export_btn)
+        
         clear_btn = QPushButton("清空所有")
         clear_btn.setObjectName("clearBtn")
         clear_btn.clicked.connect(self.clear_all)
@@ -237,6 +322,8 @@ class DesireCalculator(QMainWindow):
         name = self.name_edit.text().strip()
         frequency = self.freq_combo.currentText()
         cost_str = self.cost_edit.text().strip()
+        priority = self.priority_combo.currentText()
+        category = self.category_combo.currentText()
         
         if not name:
             QMessageBox.warning(self, "错误", "请输入需求名称")
@@ -262,6 +349,8 @@ class DesireCalculator(QMainWindow):
             'name': name,
             'frequency': frequency,
             'cost': cost,
+            'priority': priority,
+            'category': category,
             'enabled': True
         }
         
@@ -273,6 +362,24 @@ class DesireCalculator(QMainWindow):
         self.update_display()
         
         QMessageBox.information(self, "成功", f"已添加需求: {name}")
+        
+    def set_budget_goal(self):
+        """设置预算目标"""
+        try:
+            budget_str, ok = QInputDialog.getText(self, "设置预算目标", 
+                                                "请输入月度预算目标金额(元):")
+            if ok and budget_str.strip():
+                budget = float(budget_str.strip())
+                if budget > 0:
+                    self.budget_goal = budget
+                    self.budget_label.setText(f"预算目标: ¥{budget:.2f}")
+                    self.budget_progress.setVisible(True)
+                    self.update_statistics()
+                    QMessageBox.information(self, "成功", f"预算目标已设置为 ¥{budget:.2f}")
+                else:
+                    QMessageBox.warning(self, "错误", "预算必须大于0")
+        except ValueError:
+            QMessageBox.warning(self, "错误", "请输入有效的数字")
         
     def update_display(self):
         """更新需求列表显示"""
@@ -302,15 +409,37 @@ class DesireCalculator(QMainWindow):
         # 需求信息
         info_layout = QVBoxLayout()
         
+        # 名称和优先级
+        name_layout = QHBoxLayout()
         name_label = QLabel(desire['name'])
         name_label.setFont(QFont("Arial", 10, QFont.Bold))
+        
+        priority_label = QLabel(f"[{desire['priority']}]")
+        priority_label.setFont(QFont("Arial", 9))
+        priority_colors = {
+            "低": "#27ae60",
+            "中": "#f39c12", 
+            "高": "#e74c3c",
+            "必需": "#8e44ad"
+        }
+        priority_label.setStyleSheet(f"color: {priority_colors.get(desire['priority'], '#2c3e50')}")
+        
+        name_layout.addWidget(name_label)
+        name_layout.addWidget(priority_label)
+        name_layout.addStretch()
+        
+        info_layout.addLayout(name_layout)
+        
+        # 详细信息
+        details_label = QLabel(
+            f"{desire['frequency']} ¥{desire['cost']:.2f} | {desire['category']}"
+        )
+        details_label.setFont(QFont("Arial", 9))
+        
         if not desire['enabled']:
             name_label.setStyleSheet("color: #95a5a6;")
-        info_layout.addWidget(name_label)
-        
-        details_label = QLabel(f"{desire['frequency']} ¥{desire['cost']:.2f}")
-        if not desire['enabled']:
             details_label.setStyleSheet("color: #bdc3c7;")
+        
         info_layout.addWidget(details_label)
         
         layout.addLayout(info_layout)
@@ -330,6 +459,145 @@ class DesireCalculator(QMainWindow):
             self.desires[desire_id]['enabled'] = enabled
             self.update_display()
             
+    def filter_desires(self):
+        """根据筛选条件显示需求"""
+        category_filter = self.category_filter.currentText()
+        priority_filter = self.priority_filter.currentText()
+        
+        self.desire_list.clear()
+        
+        for desire_id, desire in self.desires.items():
+            # 应用筛选条件
+            if category_filter != "全部" and desire['category'] != category_filter:
+                continue
+            if priority_filter != "全部" and desire['priority'] != priority_filter:
+                continue
+                
+            item_widget = self.create_desire_item(desire_id, desire)
+            list_item = QListWidgetItem()
+            list_item.setSizeHint(item_widget.sizeHint())
+            self.desire_list.addItem(list_item)
+            self.desire_list.setItemWidget(list_item, item_widget)
+            
+        self.update_statistics()
+        
+    def export_report(self):
+        """导出详细报告"""
+        try:
+            if not self.desires:
+                QMessageBox.warning(self, "警告", "没有可导出的数据")
+                return
+                
+            filename, _ = QFileDialog.getSaveFileName(
+                self, "导出报告", f"desire_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt", 
+                "Text Files (*.txt)"
+            )
+            
+            if filename:
+                with open(filename, 'w', encoding='utf-8') as f:
+                    f.write("需求计算器详细报告\n")
+                    f.write("=" * 50 + "\n\n")
+                    
+                    # 总体统计
+                    monthly_total = 0
+                    yearly_total = 0
+                    category_totals = {}
+                    priority_counts = {"低": 0, "中": 0, "高": 0, "必需": 0}
+                    
+                    # 计算统计
+                    for desire in self.desires.values():
+                        if not desire['enabled']:
+                            continue
+                            
+                        cost = desire['cost']
+                        frequency = desire['frequency']
+                        category = desire['category']
+                        priority = desire['priority']
+                        
+                        # 计算月度花销
+                        if frequency == "每天":
+                            monthly_cost = cost * 30
+                        elif frequency == "每周":
+                            monthly_cost = cost * 4.33
+                        elif frequency == "每月":
+                            monthly_cost = cost
+                        elif frequency == "每季度":
+                            monthly_cost = cost / 3
+                        elif frequency == "每年":
+                            monthly_cost = cost / 12
+                        else:
+                            monthly_cost = 0
+                            
+                        monthly_total += monthly_cost
+                        
+                        if category not in category_totals:
+                            category_totals[category] = 0
+                        category_totals[category] += monthly_cost
+                        
+                        if priority in priority_counts:
+                            priority_counts[priority] += 1
+                    
+                    yearly_total = monthly_total * 12
+                    
+                    # 写入报告
+                    f.write(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+                    
+                    f.write("【总体统计】\n")
+                    f.write(f"月度总花销: ¥{monthly_total:.2f}\n")
+                    f.write(f"年度总花销: ¥{yearly_total:.2f}\n")
+                    if self.budget_goal > 0:
+                        f.write(f"预算目标: ¥{self.budget_goal:.2f}\n")
+                        f.write(f"预算使用率: {min(100, int((monthly_total / self.budget_goal) * 100))}%\n")
+                    f.write("\n")
+                    
+                    f.write("【按类别统计】\n")
+                    for category, total in sorted(category_totals.items(), key=lambda x: x[1], reverse=True):
+                        f.write(f"{category}: ¥{total:.2f}\n")
+                    f.write("\n")
+                    
+                    f.write("【按优先级统计】\n")
+                    for priority, count in priority_counts.items():
+                        f.write(f"{priority}优先级: {count}个需求\n")
+                    f.write("\n")
+                    
+                    f.write("【详细需求列表】\n")
+                    for desire_id, desire in sorted(self.desires.items(), 
+                                                   key=lambda x: x[1]['priority']):
+                        status = "启用" if desire['enabled'] else "禁用"
+                        frequency = desire['frequency']
+                        cost = desire['cost']
+                        
+                        # 计算月度花销
+                        if frequency == "每天":
+                            monthly_cost = cost * 30
+                        elif frequency == "每周":
+                            monthly_cost = cost * 4.33
+                        elif frequency == "每月":
+                            monthly_cost = cost
+                        elif frequency == "每季度":
+                            monthly_cost = cost / 3
+                        elif frequency == "每年":
+                            monthly_cost = cost / 12
+                        else:
+                            monthly_cost = 0
+                            
+                        f.write(f"- {desire['name']} ({status})\n")
+                        f.write(f"  频率: {frequency}\n")
+                        f.write(f"  单次花销: ¥{cost:.2f}\n")
+                        f.write(f"  月度花销: ¥{monthly_cost:.2f}\n")
+                        f.write(f"  优先级: {desire['priority']}\n")
+                        f.write(f"  类别: {desire['category']}\n")
+                        f.write("\n")
+                
+                QMessageBox.information(self, "成功", f"报告已导出到: {filename}")
+                
+        except Exception as e:
+            QMessageBox.critical(self, "错误", f"导出失败: {str(e)}")
+        
+    def update_display(self):
+        """更新需求列表显示"""
+        self.filter_desires()
+            
     def delete_desire(self, desire_id):
         """删除需求"""
         if desire_id in self.desires:
@@ -348,12 +616,18 @@ class DesireCalculator(QMainWindow):
         """更新统计信息"""
         monthly_total = 0
         
+        # 按类别统计
+        category_totals = {}
+        priority_counts = {"低": 0, "中": 0, "高": 0, "必需": 0}
+        
         for desire in self.desires.values():
             if not desire['enabled']:
                 continue
                 
             cost = desire['cost']
             frequency = desire['frequency']
+            category = desire['category']
+            priority = desire['priority']
             
             # 计算月度花销
             if frequency == "每天":
@@ -371,11 +645,34 @@ class DesireCalculator(QMainWindow):
                 
             monthly_total += monthly_cost
             
+            # 按类别累计
+            if category not in category_totals:
+                category_totals[category] = 0
+            category_totals[category] += monthly_cost
+            
+            # 按优先级计数
+            if priority in priority_counts:
+                priority_counts[priority] += 1
+        
         yearly_total = monthly_total * 12
         
         # 更新显示
         self.monthly_label.setText(f"月度总花销: ¥{monthly_total:.2f}")
         self.yearly_label.setText(f"年度总花销: ¥{yearly_total:.2f}")
+        
+        # 更新预算进度
+        if self.budget_goal > 0:
+            budget_percentage = min(100, int((monthly_total / self.budget_goal) * 100))
+            self.budget_progress.setValue(budget_percentage)
+            self.budget_progress.setFormat(f"{budget_percentage}% ({monthly_total:.0f}/¥{self.budget_goal:.0f})")
+            
+            # 根据进度设置颜色
+            if budget_percentage <= 80:
+                self.budget_progress.setStyleSheet("QProgressBar::chunk { background-color: #27ae60; }")
+            elif budget_percentage <= 100:
+                self.budget_progress.setStyleSheet("QProgressBar::chunk { background-color: #f39c12; }")
+            else:
+                self.budget_progress.setStyleSheet("QProgressBar::chunk { background-color: #e74c3c; }")
         
     def save_desires(self):
         """保存需求数据"""
