@@ -414,7 +414,8 @@ class DesireCalculator(QMainWindow):
         name_label = QLabel(desire['name'])
         name_label.setFont(QFont("Arial", 10, QFont.Bold))
         
-        priority_label = QLabel(f"[{desire['priority']}]")
+        priority = desire.get('priority', '中')  # 默认优先级为中
+        priority_label = QLabel(f"[{priority}]")
         priority_label.setFont(QFont("Arial", 9))
         priority_colors = {
             "低": "#27ae60",
@@ -422,7 +423,7 @@ class DesireCalculator(QMainWindow):
             "高": "#e74c3c",
             "必需": "#8e44ad"
         }
-        priority_label.setStyleSheet(f"color: {priority_colors.get(desire['priority'], '#2c3e50')}")
+        priority_label.setStyleSheet(f"color: {priority_colors.get(priority, '#2c3e50')}")
         
         name_layout.addWidget(name_label)
         name_layout.addWidget(priority_label)
@@ -695,7 +696,20 @@ class DesireCalculator(QMainWindow):
             )
             if filename:
                 with open(filename, 'r', encoding='utf-8') as f:
-                    self.desires = json.load(f)
+                    loaded_data = json.load(f)
+                    
+                # 验证并修复数据结构
+                for desire_id, desire in loaded_data.items():
+                    if isinstance(desire, dict):
+                        # 确保所有必需的键都存在
+                        if 'priority' not in desire:
+                            desire['priority'] = '中'
+                        if 'enabled' not in desire:
+                            desire['enabled'] = True
+                        if 'category' not in desire:
+                            desire['category'] = '其他'
+                
+                self.desires = loaded_data
                 self.update_display()
                 QMessageBox.information(self, "成功", f"数据已从 {filename} 加载")
         except Exception as e:
