@@ -29,116 +29,201 @@ class DesireCalculator(QMainWindow):
         
     def init_ui(self):
         """初始化用户界面"""
-        self.setWindowTitle("需求计算器 - Desire Calculator")
-        self.setGeometry(100, 100, 1000, 700)
-        self.setMinimumSize(800, 600)
+        self.setWindowTitle("Desire Calculator")
+        self.setGeometry(100, 100, 1200, 800)
+        self.setMinimumSize(900, 650)
         
-        # 设置样式
+        # 现代主题
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #f5f5f5;
+                background-color: #f8f9fa;
+            }
+            QWidget {
+                font-family: 'SF Pro Display', 'Segoe UI', 'Helvetica Neue', sans-serif;
+                font-size: 14px;
+                color: #000000;
+            }
+            QLabel {
+                color: #000000;
+            }
+            QLineEdit {
+                color: #000000;
+                background-color: white;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            QLineEdit:focus {
+                border: 2px solid #667eea;
+                background-color: white;
+                color: #000000;
+            }
+            QComboBox {
+                color: #000000;
+                background-color: white;
+                border: 2px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+            QComboBox:focus {
+                border: 2px solid #667eea;
+                background-color: white;
+                color: #000000;
+            }
+            QComboBox::drop-down {
+                border: none;
+                width: 20px;
+            }
+            QComboBox::down-arrow {
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 5px solid #000000;
+                margin-right: 8px;
             }
             QGroupBox {
-                font-weight: bold;
-                border: 2px solid #cccccc;
-                border-radius: 5px;
-                margin-top: 1ex;
-                padding-top: 10px;
+                font-weight: 600;
+                font-size: 16px;
+                border: none;
+                border-radius: 12px;
+                background-color: white;
+                padding: 24px;
+                margin-top: 8px;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px 0 5px;
+                subcontrol-position: top left;
+                padding: 0 0 16px 0;
+                color: #000000;
             }
             QPushButton {
-                background-color: #3498db;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
                 border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-weight: bold;
+                padding: 12px 24px;
+                border-radius: 8px;
+                font-weight: 600;
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
             }
             QPushButton:hover {
-                background-color: #2980b9;
+                background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
             }
             QPushButton:pressed {
-                background-color: #21618c;
+                background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
             }
             QPushButton#deleteBtn {
-                background-color: #e74c3c;
-                min-width: 30px;
-                max-width: 30px;
+                background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+                box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+                min-width: 36px;
+                max-width: 36px;
+                font-size: 18px;
+                font-weight: bold;
             }
             QPushButton#deleteBtn:hover {
-                background-color: #c0392b;
+                background: linear-gradient(135deg, #ee5a52 0%, #ff6b6b 100%);
+                box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
             }
             QPushButton#saveBtn {
-                background-color: #27ae60;
+                background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+                box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
             }
             QPushButton#saveBtn:hover {
-                background-color: #229954;
+                background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+                box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
             }
             QPushButton#loadBtn {
-                background-color: #f39c12;
+                background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+                box-shadow: 0 4px 12px rgba(237, 137, 54, 0.3);
             }
             QPushButton#loadBtn:hover {
-                background-color: #e67e22;
+                background: linear-gradient(135deg, #dd6b20 0%, #ed8936 100%);
+                box-shadow: 0 6px 20px rgba(237, 137, 54, 0.4);
             }
             QPushButton#clearBtn {
-                background-color: #e74c3c;
+                background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%);
+                box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
             }
             QPushButton#clearBtn:hover {
-                background-color: #c0392b;
+                background: linear-gradient(135deg, #c53030 0%, #e53e3e 100%);
+                box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
             }
             QPushButton#budgetBtn {
-                background-color: #9b59b6;
+                background: linear-gradient(135deg, #805ad5 0%, #6b46c1 100%);
+                box-shadow: 0 4px 12px rgba(128, 90, 213, 0.3);
             }
             QPushButton#budgetBtn:hover {
-                background-color: #8e44ad;
-            }
-            QProgressBar {
-                border: 2px solid #bdc3c7;
-                border-radius: 5px;
-                text-align: center;
-            }
-            QProgressBar::chunk {
-                background-color: #3498db;
-                border-radius: 3px;
-            }
-            QProgressBar#budgetProgress::chunk {
-                background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-                    stop: 0 #27ae60, stop: 0.5 #f39c12, stop: 1 #e74c3c);
+                background: linear-gradient(135deg, #6b46c1 0%, #805ad5 100%);
+                box-shadow: 0 6px 20px rgba(128, 90, 213, 0.4);
             }
             QPushButton#exportBtn {
-                background-color: #1abc9c;
+                background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+                box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
             }
             QPushButton#exportBtn:hover {
-                background-color: #16a085;
+                background: linear-gradient(135deg, #3182ce 0%, #4299e1 100%);
+                box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+            }
+            QProgressBar {
+                border: none;
+                border-radius: 8px;
+                background-color: #e2e8f0;
+                text-align: center;
+                height: 12px;
+                color: #000000;
+            }
+            QProgressBar::chunk {
+                border-radius: 8px;
+                background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+            }
+            QProgressBar#budgetProgress::chunk {
+                background: linear-gradient(90deg, #48bb78 0%, #ed8936 50%, #e53e3e 100%);
             }
             QLineEdit, QComboBox {
-                padding: 6px;
-                border: 1px solid #bdc3c7;
-                border-radius: 4px;
-                background-color: white;
+                padding: 12px 16px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                background-color: #ffffff;
+                font-size: 14px;
+                color: #000000;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             }
             QLineEdit:focus, QComboBox:focus {
-                border: 2px solid #3498db;
+                border: 1px solid #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                outline: none;
+                color: #000000;
             }
             QLabel {
-                color: #2c3e50;
+                color: #000000;
+                font-weight: 500;
             }
             QListWidget {
-                border: 1px solid #bdc3c7;
-                border-radius: 4px;
+                border: none;
+                border-radius: 12px;
                 background-color: white;
+                box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+                color: #000000;
             }
             QListWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #ecf0f1;
+                padding: 16px;
+                border-bottom: 1px solid #f1f5f9;
+                border-radius: 0;
+                color: #000000;
             }
             QListWidget::item:selected {
-                background-color: #3498db;
-                color: white;
+                background-color: #f7fafc;
+                color: #000000;
+                border-left: 4px solid #667eea;
+            }
+            QListWidget::item:hover {
+                background-color: #f8f9fa;
+                color: #000000;
             }
         """)
         
@@ -168,54 +253,111 @@ class DesireCalculator(QMainWindow):
         """创建左侧面板"""
         panel = QWidget()
         layout = QVBoxLayout(panel)
+        layout.setSpacing(20)
+        layout.setContentsMargins(20, 20, 20, 20)
         
-        # 标题
-        title = QLabel("添加新需求")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
+        # 现代标题
+        title = QLabel("Add New Desire")
+        title.setFont(QFont("SF Pro Display", 24, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("color: #000000 !important; margin-bottom: 10px;")
         layout.addWidget(title)
         
-        # 添加需求组
-        add_group = QGroupBox("需求信息")
-        add_layout = QGridLayout(add_group)
+        # 添加需求组 - 现代卡片设计
+        add_group = QGroupBox()
+        add_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: 600;
+                font-size: 16px;
+                border: none;
+                border-radius: 16px;
+                background-color: white;
+                padding: 32px;
+                margin-top: 0px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            }
+        """)
+        
+        add_layout = QVBoxLayout(add_group)
+        add_layout.setSpacing(20)
         
         # 需求名称
-        add_layout.addWidget(QLabel("需求名称:"), 0, 0)
+        name_label = QLabel("Desire Name")
+        name_label.setFont(QFont("SF Pro Display", 12, QFont.Medium))
+        name_label.setStyleSheet("color: #000000; margin-bottom: 8px;")
+        add_layout.addWidget(name_label)
+        
         self.name_edit = QLineEdit()
-        self.name_edit.setPlaceholderText("例如：房屋月租")
-        add_layout.addWidget(self.name_edit, 0, 1)
+        self.name_edit.setPlaceholderText("e.g., Monthly Rent")
+        add_layout.addWidget(self.name_edit)
         
-        # 频率选择
-        add_layout.addWidget(QLabel("频率:"), 1, 0)
+        # 频率和花销在同一行
+        freq_cost_layout = QHBoxLayout()
+        freq_cost_layout.setSpacing(16)
+        
+        # 频率
+        freq_container = QVBoxLayout()
+        freq_label = QLabel("Frequency")
+        freq_label.setFont(QFont("SF Pro Display", 12, QFont.Medium))
+        freq_label.setStyleSheet("color: #000000; margin-bottom: 8px;")
+        freq_container.addWidget(freq_label)
+        
         self.freq_combo = QComboBox()
-        self.freq_combo.addItems(["每天", "每周", "每月", "每季度", "每年"])
-        add_layout.addWidget(self.freq_combo, 1, 1)
+        self.freq_combo.addItems(["Daily", "Weekly", "Monthly", "Quarterly", "Yearly"])
+        freq_container.addWidget(self.freq_combo)
+        freq_cost_layout.addLayout(freq_container)
         
-        # 花销输入
-        add_layout.addWidget(QLabel("花销(元):"), 2, 0)
+        # 花销
+        cost_container = QVBoxLayout()
+        cost_label = QLabel("Cost (¥)")
+        cost_label.setFont(QFont("SF Pro Display", 12, QFont.Medium))
+        cost_label.setStyleSheet("color: #000000; margin-bottom: 8px;")
+        cost_container.addWidget(cost_label)
+        
         self.cost_edit = QLineEdit()
-        self.cost_edit.setPlaceholderText("例如：3000")
-        add_layout.addWidget(self.cost_edit, 2, 1)
+        self.cost_edit.setPlaceholderText("e.g., 3000")
+        cost_container.addWidget(self.cost_edit)
+        freq_cost_layout.addLayout(cost_container)
+        
+        add_layout.addLayout(freq_cost_layout)
+        
+        # 优先级和类别在同一行
+        priority_category_layout = QHBoxLayout()
+        priority_category_layout.setSpacing(16)
         
         # 优先级
-        add_layout.addWidget(QLabel("优先级:"), 3, 0)
+        priority_container = QVBoxLayout()
+        priority_label = QLabel("Priority")
+        priority_label.setFont(QFont("SF Pro Display", 12, QFont.Medium))
+        priority_label.setStyleSheet("color: #000000; margin-bottom: 8px;")
+        priority_container.addWidget(priority_label)
+        
         self.priority_combo = QComboBox()
-        self.priority_combo.addItems(["低", "中", "高", "必需"])
-        add_layout.addWidget(self.priority_combo, 3, 1)
+        self.priority_combo.addItems(["Low", "Medium", "High", "Essential"])
+        priority_container.addWidget(self.priority_combo)
+        priority_category_layout.addLayout(priority_container)
         
         # 类别
-        add_layout.addWidget(QLabel("类别:"), 4, 0)
+        category_container = QVBoxLayout()
+        category_label = QLabel("Category")
+        category_label.setFont(QFont("SF Pro Display", 12, QFont.Medium))
+        category_label.setStyleSheet("color: #000000; margin-bottom: 8px;")
+        category_container.addWidget(category_label)
+        
         self.category_combo = QComboBox()
         self.category_combo.addItems([
-            "住房", "交通", "餐饮", "娱乐", "购物", "健康", 
-            "教育", "投资", "其他"
+            "Housing", "Transport", "Food", "Entertainment", "Shopping", "Health",
+            "Education", "Investment", "Other"
         ])
-        add_layout.addWidget(self.category_combo, 4, 1)
+        category_container.addWidget(self.category_combo)
+        priority_category_layout.addLayout(category_container)
         
+        add_layout.addLayout(priority_category_layout)
         layout.addWidget(add_group)
         
-        # 添加按钮
-        add_btn = QPushButton("添加需求")
+        # 现代添加按钮
+        add_btn = QPushButton("✨ Add Desire")
+        add_btn.setFont(QFont("SF Pro Display", 14, QFont.Bold))
         add_btn.clicked.connect(self.add_desire)
         layout.addWidget(add_btn)
         
@@ -226,90 +368,161 @@ class DesireCalculator(QMainWindow):
         """创建右侧面板"""
         panel = QWidget()
         layout = QVBoxLayout(panel)
+        layout.setSpacing(20)
+        layout.setContentsMargins(20, 20, 20, 20)
         
-        # 标题
-        title = QLabel("需求列表")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
+        # 现代标题
+        title = QLabel("Your Desires")
+        title.setFont(QFont("SF Pro Display", 24, QFont.Bold))
         title.setAlignment(Qt.AlignCenter)
+        title.setStyleSheet("color: #000000 !important; margin-bottom: 10px;")
         layout.addWidget(title)
         
-        # 需求列表
+        # 筛选组 - 现代化
+        filter_group = QGroupBox()
+        filter_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: 600;
+                font-size: 16px;
+                border: none;
+                border-radius: 16px;
+                background-color: white;
+                padding: 20px;
+                margin-top: 0px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            }
+        """)
+        
+        filter_layout = QHBoxLayout(filter_group)
+        filter_layout.setSpacing(16)
+        
+        # 类别筛选
+        category_container = QVBoxLayout()
+        category_label = QLabel("Category")
+        category_label.setFont(QFont("SF Pro Display", 12, QFont.Medium))
+        category_label.setStyleSheet("color: #000000; margin-bottom: 8px;")
+        category_container.addWidget(category_label)
+        
+        self.category_filter = QComboBox()
+        self.category_filter.addItem("All")
+        self.category_filter.addItems([
+            "Housing", "Transport", "Food", "Entertainment", "Shopping", "Health",
+            "Education", "Investment", "Other"
+        ])
+        self.category_filter.currentTextChanged.connect(self.filter_desires)
+        category_container.addWidget(self.category_filter)
+        filter_layout.addLayout(category_container)
+        
+        # 优先级筛选
+        priority_container = QVBoxLayout()
+        priority_label = QLabel("Priority")
+        priority_label.setFont(QFont("SF Pro Display", 12, QFont.Medium))
+        priority_label.setStyleSheet("color: #000000; margin-bottom: 8px;")
+        priority_container.addWidget(priority_label)
+        
+        self.priority_filter = QComboBox()
+        self.priority_filter.addItem("All")
+        self.priority_filter.addItems(["Low", "Medium", "High", "Essential"])
+        self.priority_filter.currentTextChanged.connect(self.filter_desires)
+        priority_container.addWidget(self.priority_filter)
+        filter_layout.addLayout(priority_container)
+        
+        layout.addWidget(filter_group)
+        
+        # 需求列表 - 现代卡片
         self.desire_list = QListWidget()
+        self.desire_list.setStyleSheet("""
+            QListWidget {
+                border: none;
+                border-radius: 16px;
+                background-color: white;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            }
+        """)
         layout.addWidget(self.desire_list)
         
-        # 统计信息组
-        stats_group = QGroupBox("花销统计")
-        stats_layout = QVBoxLayout(stats_group)
+        # 统计信息组 - 现代卡片
+        stats_group = QGroupBox()
+        stats_group.setStyleSheet("""
+            QGroupBox {
+                font-weight: 600;
+                font-size: 16px;
+                border: none;
+                border-radius: 16px;
+                background-color: white;
+                padding: 24px;
+                margin-top: 0px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            }
+        """)
         
-        self.monthly_label = QLabel("月度总花销: ¥0.00")
-        self.monthly_label.setFont(QFont("Arial", 12, QFont.Bold))
-        self.monthly_label.setStyleSheet("color: #e74c3c;")
+        stats_layout = QVBoxLayout(stats_group)
+        stats_layout.setSpacing(16)
+        
+        # 现代统计标签
+        self.monthly_label = QLabel("Monthly Total: ¥0.00")
+        self.monthly_label.setFont(QFont("SF Pro Display", 16, QFont.Bold))
+        self.monthly_label.setStyleSheet("color: #000000;")
         stats_layout.addWidget(self.monthly_label)
         
-        self.yearly_label = QLabel("年度总花销: ¥0.00")
-        self.yearly_label.setFont(QFont("Arial", 12, QFont.Bold))
-        self.yearly_label.setStyleSheet("color: #e74c3c;")
+        self.yearly_label = QLabel("Yearly Total: ¥0.00")
+        self.yearly_label.setFont(QFont("SF Pro Display", 16, QFont.Bold))
+        self.yearly_label.setStyleSheet("color: #000000;")
         stats_layout.addWidget(self.yearly_label)
         
         # 预算进度
-        self.budget_label = QLabel("预算目标: ¥0.00")
-        self.budget_label.setFont(QFont("Arial", 10))
+        self.budget_label = QLabel("Budget: Not Set")
+        self.budget_label.setFont(QFont("SF Pro Display", 14))
+        self.budget_label.setAlignment(Qt.AlignCenter)
+        self.budget_label.setStyleSheet("color: #000000;")
         stats_layout.addWidget(self.budget_label)
         
         self.budget_progress = QProgressBar()
         self.budget_progress.setObjectName("budgetProgress")
         self.budget_progress.setVisible(False)
+        self.budget_progress.setStyleSheet("""
+            QProgressBar {
+                border: none;
+                border-radius: 8px;
+                background-color: #e2e8f0;
+                text-align: center;
+                height: 12px;
+            }
+            QProgressBar::chunk {
+                border-radius: 8px;
+                background: linear-gradient(90deg, #48bb78 0%, #38a169 100%);
+            }
+        """)
         stats_layout.addWidget(self.budget_progress)
         
         layout.addWidget(stats_group)
         
-        # 筛选和排序
-        filter_group = QGroupBox("筛选和排序")
-        filter_layout = QGridLayout(filter_group)
-        
-        filter_layout.addWidget(QLabel("类别:"), 0, 0)
-        self.category_filter = QComboBox()
-        self.category_filter.addItem("全部")
-        self.category_filter.addItems([
-            "住房", "交通", "餐饮", "娱乐", "购物", "健康", 
-            "教育", "投资", "其他"
-        ])
-        self.category_filter.currentTextChanged.connect(self.filter_desires)
-        filter_layout.addWidget(self.category_filter, 0, 1)
-        
-        filter_layout.addWidget(QLabel("优先级:"), 0, 2)
-        self.priority_filter = QComboBox()
-        self.priority_filter.addItem("全部")
-        self.priority_filter.addItems(["低", "中", "高", "必需"])
-        self.priority_filter.currentTextChanged.connect(self.filter_desires)
-        filter_layout.addWidget(self.priority_filter, 0, 3)
-        
-        layout.addWidget(filter_group)
-        
-        # 操作按钮
+        # 现代按钮组
         button_layout = QHBoxLayout()
+        button_layout.setSpacing(12)
         
-        save_btn = QPushButton("保存数据")
+        save_btn = QPushButton("💾 Save")
         save_btn.setObjectName("saveBtn")
         save_btn.clicked.connect(self.save_desires)
         button_layout.addWidget(save_btn)
         
-        load_btn = QPushButton("加载数据")
+        # 黑色字
+        load_btn = QPushButton("📁 Load")
         load_btn.setObjectName("loadBtn")
         load_btn.clicked.connect(self.load_desires)
         button_layout.addWidget(load_btn)
         
-        budget_btn = QPushButton("设置预算")
+        budget_btn = QPushButton("💰 Budget")
         budget_btn.setObjectName("budgetBtn")
         budget_btn.clicked.connect(self.set_budget_goal)
         button_layout.addWidget(budget_btn)
         
-        export_btn = QPushButton("导出报告")
+        export_btn = QPushButton("📊 Export")
         export_btn.setObjectName("exportBtn")
         export_btn.clicked.connect(self.export_report)
         button_layout.addWidget(export_btn)
         
-        clear_btn = QPushButton("清空所有")
+        clear_btn = QPushButton("🗑️ Clear All")
         clear_btn.setObjectName("clearBtn")
         clear_btn.clicked.connect(self.clear_all)
         button_layout.addWidget(clear_btn)
@@ -364,22 +577,22 @@ class DesireCalculator(QMainWindow):
         QMessageBox.information(self, "成功", f"已添加需求: {name}")
         
     def set_budget_goal(self):
-        """设置预算目标"""
+        """Set budget goal"""
         try:
-            budget_str, ok = QInputDialog.getText(self, "设置预算目标", 
-                                                "请输入月度预算目标金额(元):")
+            budget_str, ok = QInputDialog.getText(self, "Set Budget Goal", 
+                                                "Enter your monthly budget (¥):")
             if ok and budget_str.strip():
                 budget = float(budget_str.strip())
                 if budget > 0:
                     self.budget_goal = budget
-                    self.budget_label.setText(f"预算目标: ¥{budget:.2f}")
+                    self.budget_label.setText(f"Budget: ¥{budget:.2f}")
                     self.budget_progress.setVisible(True)
                     self.update_statistics()
-                    QMessageBox.information(self, "成功", f"预算目标已设置为 ¥{budget:.2f}")
+                    QMessageBox.information(self, "Success", f"Budget set to ¥{budget:.2f}")
                 else:
-                    QMessageBox.warning(self, "错误", "预算必须大于0")
+                    QMessageBox.warning(self, "Error", "Budget must be greater than 0")
         except ValueError:
-            QMessageBox.warning(self, "错误", "请输入有效的数字")
+            QMessageBox.warning(self, "Error", "Please enter a valid number")
         
     def update_display(self):
         """更新需求列表显示"""
@@ -395,35 +608,61 @@ class DesireCalculator(QMainWindow):
         self.update_statistics()
         
     def create_desire_item(self, desire_id, desire):
-        """创建单个需求项"""
+        """创建单个需求项（现代化）"""
         widget = QWidget()
         layout = QHBoxLayout(widget)
-        layout.setContentsMargins(5, 5, 5, 5)
+        layout.setContentsMargins(16, 16, 16, 16)
+        layout.setSpacing(12)
         
         # 启用复选框
         enabled_cb = QCheckBox()
         enabled_cb.setChecked(desire['enabled'])
         enabled_cb.toggled.connect(lambda checked, did=desire_id: self.toggle_desire(did, checked))
+        enabled_cb.setStyleSheet("""
+            QCheckBox {
+                spacing: 8px;
+            }
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+                border-radius: 4px;
+                border: 2px solid #e2e8f0;
+                background-color: white;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #667eea;
+                border-color: #667eea;
+            }
+        """)
         layout.addWidget(enabled_cb)
         
         # 需求信息
         info_layout = QVBoxLayout()
+        info_layout.setSpacing(4)
         
         # 名称和优先级
         name_layout = QHBoxLayout()
-        name_label = QLabel(desire['name'])
-        name_label.setFont(QFont("Arial", 10, QFont.Bold))
+        name_layout.setSpacing(8)
         
-        priority = desire.get('priority', '中')  # 默认优先级为中
-        priority_label = QLabel(f"[{priority}]")
-        priority_label.setFont(QFont("Arial", 9))
+        name_label = QLabel(desire['name'])
+        name_label.setFont(QFont("SF Pro Display", 14, QFont.Bold))
+        
+        priority = desire.get('priority', 'Medium')
         priority_colors = {
-            "低": "#27ae60",
-            "中": "#f39c12", 
-            "高": "#e74c3c",
-            "必需": "#8e44ad"
+            "Low": "#48bb78",
+            "Medium": "#ed8936", 
+            "High": "#e53e3e",
+            "Essential": "#805ad5"
         }
-        priority_label.setStyleSheet(f"color: {priority_colors.get(priority, '#2c3e50')}")
+        priority_label = QLabel(priority)
+        priority_label.setFont(QFont("SF Pro Display", 11, QFont.Bold))
+        priority_label.setStyleSheet(f"""
+            background-color: {priority_colors.get(priority, '#667eea')}; 
+            color: white; 
+            padding: 4px 12px; 
+            border-radius: 12px;
+            font-size: 11px;
+        """)
         
         name_layout.addWidget(name_label)
         name_layout.addWidget(priority_label)
@@ -433,13 +672,14 @@ class DesireCalculator(QMainWindow):
         
         # 详细信息
         details_label = QLabel(
-            f"{desire['frequency']} ¥{desire['cost']:.2f} | {desire['category']}"
+            f"{desire['frequency']} • ¥{desire['cost']:.2f} • {desire['category']}"
         )
-        details_label.setFont(QFont("Arial", 9))
+        details_label.setFont(QFont("SF Pro Display", 12))
+        details_label.setStyleSheet("color: #000000;")
         
         if not desire['enabled']:
-            name_label.setStyleSheet("color: #95a5a6;")
-            details_label.setStyleSheet("color: #bdc3c7;")
+            name_label.setStyleSheet("color: #666666; text-decoration: line-through;")
+            details_label.setStyleSheet("color: #666666; text-decoration: line-through;")
         
         info_layout.addWidget(details_label)
         
@@ -447,7 +687,7 @@ class DesireCalculator(QMainWindow):
         layout.addStretch()
         
         # 删除按钮
-        delete_btn = QPushButton("×")
+        delete_btn = QPushButton("✕")
         delete_btn.setObjectName("deleteBtn")
         delete_btn.clicked.connect(lambda: self.delete_desire(desire_id))
         layout.addWidget(delete_btn)
